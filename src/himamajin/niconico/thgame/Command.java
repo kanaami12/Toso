@@ -1,11 +1,13 @@
 package himamajin.niconico.thgame;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
-public class Command implements CommandExecutor {
+public class Command extends Main implements CommandExecutor {
 	
 	//
 	//tosoコマンドが実行された時
@@ -24,7 +26,26 @@ public class Command implements CommandExecutor {
 			
 			//hunterのとき
 			if(args[0].equals("hunter")){
-				
+		        Player target = getPlayer(args[1]);
+		        if (target == null) {
+		            sender.sendMessage(args[0] + " というプレイヤーは見つかりません。");
+		            return true;
+		        }
+		        
+		        //targetがすでに登録されていないか確認
+		        int check = hunter.indexOf(target);
+		        if(check == -1){
+		        	hunter.add(target);
+					Team team = teamYellow;
+					team.addPlayer(target);
+					String name = target.getPlayerListName();
+					player.sendMessage(ChatColor.GREEN+name+"をハンターに追加しました。");
+		        }else{
+		        	//すでに登録されている場合
+		        	player.sendMessage(ChatColor.RED+"このプレイヤーはすでに登録されています。");
+		        }
+		        
+		        
 			}
 			//playerの時
 			if(args[0].equals("player")){
@@ -88,10 +109,18 @@ public class Command implements CommandExecutor {
 			
 			
 			
-			
-			
-			
 		}
 		return false;
 	}
+
+	
+	    //オンラインのプレイヤーを取得するメソッド
+		private Player getPlayer(String name) {
+		    for ( Player player : Bukkit.getOnlinePlayers() ) {
+		        if ( player.getName().equals(name) ) {
+		            return player;
+		        }
+		    }
+		    return null;
+		}
 }
